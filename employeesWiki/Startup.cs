@@ -1,16 +1,13 @@
+using employeesWiki.Shared;
+using employeesWiki.StartupConfigs;
+using employeesWiki.WikiDbContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace employeesWiki
 {
@@ -26,8 +23,12 @@ namespace employeesWiki
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            DependencyInjectionConfig.AddScoped(services);
 
+            services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
+            services.AddDbContext<DbCtx>(x =>x.UseSqlServer(Configuration[Constants.ConnectionStringConfigName]));
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "employeesWiki", Version = "v1" });
