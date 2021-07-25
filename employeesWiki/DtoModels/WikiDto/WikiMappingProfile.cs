@@ -8,6 +8,7 @@ namespace employeesWiki.DtoModels.WikiDto
         public WikiMappingProfile()
         {
             CreateMap<Wiki, WikiDto>();
+            CreateMap<WikiDto, Wiki>();
         }
     }
 }

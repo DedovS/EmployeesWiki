@@ -1,6 +1,7 @@
 ﻿using employeesWiki.Contracts.Repository;
 using employeesWiki.Core;
 using employeesWiki.Models;
+using employeesWiki.Services;
 using employeesWiki.WikiDbContext;
 using Microsoft.Extensions.Logging;
 

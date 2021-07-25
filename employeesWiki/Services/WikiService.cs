@@ -14,10 +14,10 @@ namespace employeesWiki.Services
     public class WikiService : IWikiService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public readonly ILogger _logger;
+        public readonly ILogger<WikiService> _logger;
 
         public WikiService(IUnitOfWork unitOfWork,
-            ILogger logger)
+            ILogger<WikiService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -27,7 +27,9 @@ namespace employeesWiki.Services
         {
             try
             {
-                return await _unitOfWork.WikiRepository.CreateAsync(wiki);
+                var newWiki = await _unitOfWork.WikiRepository.CreateAsync(wiki);
+                await _unitOfWork.CompleteAsync();
+                return newWiki;
             }
             catch (Exception ex)
             {
@@ -82,7 +84,9 @@ namespace employeesWiki.Services
         {
             try
             {
-                return await _unitOfWork.WikiRepository.UpdateAsync(wiki);
+                var updatedWiki = await _unitOfWork.WikiRepository.UpdateAsync(wiki);
+                await _unitOfWork.CompleteAsync();
+                return updatedWiki;
             }
             catch (Exception ex)
             {
