@@ -9,6 +9,10 @@ namespace employeesWiki.Shared
     {
         public static IQueryable<T> SortBy<T>(this IQueryable<T> query, PageParams pageParams) where T : BaseEntity
         {
+            pageParams.OrderDirection = pageParams.OrderDirection == "desc" || pageParams.OrderDirection == "asc"
+                ? pageParams.OrderDirection
+                : "asc";
+
             var orderQuery = query.OrderBy(x => 0);
 
             orderQuery = !String.IsNullOrEmpty(pageParams.OrderColumn)
@@ -21,7 +25,7 @@ namespace employeesWiki.Shared
         public static IQueryable<T> Pagination<T>(this IQueryable<T> query, PageParams pageParams)
         {
             var skip = pageParams.PageNumber == 0 ? 1 : pageParams.PageNumber;
-            var pageSize = pageParams.PageSize;
+            var pageSize = pageParams.PageSize > 0 ? pageParams.PageSize : 10;
             skip = skip * pageSize;
 
             var result = query

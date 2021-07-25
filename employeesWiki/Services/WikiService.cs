@@ -61,14 +61,16 @@ namespace employeesWiki.Services
         {
             Expression<Func<Wiki, bool>> predicate = null;
 
-            if (pageParams.ArticleType.HasValue)
+            if (pageParams.ArticleType.HasValue && pageParams.ArticleType.Value > 0)
             {
                 predicate = x => x.ArticleType == pageParams.ArticleType;
             }
 
             if (pageParams.Date.HasValue)
             {
-                predicate = x => x.Date == pageParams.Date;
+                predicate = x => x.Date.Year == pageParams.Date.Value.Year &&
+                x.Date.Month == pageParams.Date.Value.Month &&
+                x.Date.Day == pageParams.Date.Value.Day;
             }
 
             if (!string.IsNullOrEmpty(pageParams.Search))
@@ -77,7 +79,8 @@ namespace employeesWiki.Services
                 || x.Description.Contains(pageParams.Search);
             }
 
-            return await _unitOfWork.WikiRepository.GetListAsync(pageParams, predicate);
+            var wikies = await _unitOfWork.WikiRepository.GetListAsync(pageParams, predicate);
+            return wikies;
         }
 
         public async Task<Wiki> UpdateAsync(Wiki wiki)

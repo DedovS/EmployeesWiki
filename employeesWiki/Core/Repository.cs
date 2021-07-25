@@ -98,7 +98,8 @@ namespace employeesWiki.Core
                 entityQuery = include(entityQuery);
             }
 
-            return await entityQuery.ToListAsync();
+            var entity = await entityQuery.ToListAsync();
+            return entity;
         }
 
         public virtual async Task<T> UpdateAsync(T entity)
