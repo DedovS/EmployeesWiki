@@ -15,40 +15,68 @@ namespace employeesWiki.Core
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
-        protected DbCtx _context;
-        internal DbSet<T> _dbSet;
-        public readonly ILogger _logger;
+        private readonly DbCtx _context;
+        private readonly DbSet<T> _dbSet;
+        private readonly ILogger _logger;
 
         public Repository(DbCtx context,
                           ILogger logger)
         {
             _context = context;
-            _dbSet = context.Set<T>();
+
+            if (_context != null)
+            {
+                _dbSet = context.Set<T>();
+            }
             _logger = logger;
         }
 
         public virtual async Task<T> CreateAsync(T entity)
         {
-            await _dbSet.AddAsync(entity);
-            return entity;
+            try
+            {
+                await _dbSet.AddAsync(entity);
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Can't create new {typeof(T)} entity", ex);
+                throw;
+            }
         }
 
         public virtual async Task<bool> DeleteAsync(int id)
         {
-            var entity = await GetByIdAsync(id);
-            _dbSet.Remove(entity);
-            return true;
+            try
+            {
+                if (await _dbSet.AnyAsync(x => x.Id == id))
+                {
+                    var entity = await GetByIdAsync(id);
+                    _dbSet.Remove(entity);
+                    return true;
+                }
+                else
+                {
+                    _logger.LogError($"Can't find entity to delete with id: {id}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Can't delete {typeof(T)} entity with id: {id}", ex);
+                throw;
+            }
         }
 
         public virtual async Task<T> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public virtual async Task<List<T>> GetListAsync(
-            PageParams pageParams,
-            bool disableTracking = true,
+            PageParams pageParams,            
             Expression<Func<T, bool>> predicate = null,
+            bool disableTracking = true,
             Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             var entityQuery = _dbSet.AsQueryable();
@@ -64,10 +92,10 @@ namespace employeesWiki.Core
             }
 
             entityQuery = entityQuery.Pagination(pageParams).SortBy(pageParams);
-           
+
             if (include != null)
             {
-                entityQuery = include(entityQuery); 
+                entityQuery = include(entityQuery);
             }
 
             return await entityQuery.ToListAsync();
@@ -75,8 +103,24 @@ namespace employeesWiki.Core
 
         public virtual async Task<T> UpdateAsync(T entity)
         {
-            _dbSet.Update(entity);
-            return entity;
+            try
+            {
+                if (await _dbSet.AnyAsync(x => x.Id == entity.Id))
+                {
+                    _dbSet.Update(entity);
+                    return entity;
+                }
+                else
+                {
+                    _logger.LogError($"Can't find entity to update with id: {entity.Id}");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Can't update {typeof(T)} entity with id:  {entity.Id}", ex);
+                throw;
+            }
         }
     }
 }

@@ -16,8 +16,8 @@ namespace employeesWiki.Contracts.Core
         Task<bool> DeleteAsync(int id);
         Task<T> UpdateAsync(T entity);
         Task<List<T>> GetListAsync(PageParams pageParams,
-                                    bool disableTracking = true,
                                     Expression<Func<T, bool>> predicate = null,
+                                    bool disableTracking = true,
                                     Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
     }
 }

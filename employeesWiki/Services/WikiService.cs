@@ -1,37 +1,94 @@
-﻿using employeesWiki.Contracts.Services;
+﻿using employeesWiki.Contracts.Core;
+using employeesWiki.Contracts.Services;
+using employeesWiki.DtoModels.WikiDto;
 using employeesWiki.Models;
 using employeesWiki.Shared;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace employeesWiki.Services
 {
     public class WikiService : IWikiService
     {
-        public Task<Wiki> CreateAsync(Wiki wiki)
+        private readonly IUnitOfWork _unitOfWork;
+        public readonly ILogger _logger;
+
+        public WikiService(IUnitOfWork unitOfWork,
+            ILogger logger)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
-        public Task<Wiki> DeleteAsync(int id)
+        public async Task<Wiki> CreateAsync(Wiki wiki)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _unitOfWork.WikiRepository.CreateAsync(wiki);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Can't create new article", ex);
+                throw new Exception("Can't create new article");
+            }
         }
 
-        public Task<Wiki> GetByIdAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+              return await _unitOfWork.WikiRepository.DeleteAsync(id);
+               
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Can't delete this article", ex);
+                throw new Exception("Can't delete this article");
+            }
         }
 
-        public Task<List<Wiki>> GetListAsync(PageParams pageParams)
+        public async Task<Wiki> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.WikiRepository.GetByIdAsync(id);
         }
 
-        public Task<Wiki> UpdateAsync(Wiki wiki)
+        public async Task<List<Wiki>> GetListAsync(WikiPageParam pageParams)
         {
-            throw new NotImplementedException();
+            Expression<Func<Wiki, bool>> predicate = null;
+
+            if (pageParams.ArticleType.HasValue)
+            {
+                predicate = x => x.ArticleType == pageParams.ArticleType;
+            }
+
+            if (pageParams.Date.HasValue)
+            {
+                predicate = x => x.Date == pageParams.Date;
+            }
+
+            if (!string.IsNullOrEmpty(pageParams.Search))
+            {
+                predicate = x => x.Title.Contains(pageParams.Search) 
+                || x.Description.Contains(pageParams.Search);
+            }
+
+            return await _unitOfWork.WikiRepository.GetListAsync(pageParams, predicate);
+        }
+
+        public async Task<Wiki> UpdateAsync(Wiki wiki)
+        {
+            try
+            {
+                return await _unitOfWork.WikiRepository.UpdateAsync(wiki);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Can't update article with id: {wiki.Id}", ex);
+                throw new Exception("Can't update this article");
+            }
         }
     }
 }

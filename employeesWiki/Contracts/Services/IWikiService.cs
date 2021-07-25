@@ -1,4 +1,5 @@
-﻿using employeesWiki.Models;
+﻿using employeesWiki.DtoModels.WikiDto;
+using employeesWiki.Models;
 using employeesWiki.Shared;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,11 +10,11 @@ namespace employeesWiki.Contracts.Services
     {
         Task<Wiki> CreateAsync(Wiki wiki);
 
-        Task<Wiki> DeleteAsync(int id);
+        Task<bool> DeleteAsync(int id);
 
         Task<Wiki> UpdateAsync(Wiki wiki);
 
-        Task<List<Wiki>> GetListAsync(PageParams pageParams);
+        Task<List<Wiki>> GetListAsync(WikiPageParam pageParams);
 
         Task<Wiki> GetByIdAsync(int id);
     }
