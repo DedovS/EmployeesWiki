@@ -24,7 +24,7 @@ namespace employeesWiki.Controllers
 
         [Route("getList")]
         [HttpPost]
-        public async Task<List<WikiDto>> GetList(PageParams pageParam)
+        public async Task<List<WikiDto>> GetList(WikiPageParam pageParam)
         {
             var wikiList = await _wikiService.GetListAsync(pageParam);
             return _mapper.Map<List<WikiDto>>(wikiList);
