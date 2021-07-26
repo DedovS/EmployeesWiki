@@ -67,18 +67,18 @@ namespace employeesWiki.Services
 
             if (pageParams.ArticleType.HasValue && pageParams.ArticleType.Value > 0)
             {
-                predicate = x => x.ArticleType == pageParams.ArticleType;
+                predicate = predicate.And(x => x.ArticleType == pageParams.ArticleType);
             }
 
             if (pageParams.Date.HasValue)
             {
-                predicate = x => x.Date > pageParams.Date;
+                predicate = predicate.And(x => x.Date > pageParams.Date);
             }
 
             if (!string.IsNullOrEmpty(pageParams.Search))
             {
-                predicate = x => x.Title.Contains(pageParams.Search)
-                || x.Description.Contains(pageParams.Search);
+                predicate = predicate.And(x => x.Title.Contains(pageParams.Search) ||
+                                          x.Description.Contains(pageParams.Search));
             }
 
             var pagnationWiki = await _unitOfWork.WikiRepository.GetListAsync(pageParams, predicate);
