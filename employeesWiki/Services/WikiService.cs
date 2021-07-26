@@ -44,8 +44,10 @@ namespace employeesWiki.Services
         {
             try
             {
-              return await _unitOfWork.WikiRepository.DeleteAsync(id);
-               
+                var result = await _unitOfWork.WikiRepository.DeleteAsync(id);
+                await _unitOfWork.CompleteAsync();
+                return result;
+
             }
             catch (Exception ex)
             {
@@ -70,14 +72,12 @@ namespace employeesWiki.Services
 
             if (pageParams.Date.HasValue)
             {
-                predicate = x => x.Date.Year == pageParams.Date.Value.Year &&
-                x.Date.Month == pageParams.Date.Value.Month &&
-                x.Date.Day == pageParams.Date.Value.Day;
+                predicate = x => x.Date > pageParams.Date;
             }
 
             if (!string.IsNullOrEmpty(pageParams.Search))
             {
-                predicate = x => x.Title.Contains(pageParams.Search) 
+                predicate = x => x.Title.Contains(pageParams.Search)
                 || x.Description.Contains(pageParams.Search);
             }
 
