@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using System;
+using System.Linq;
 
 namespace employeesWiki
 {
@@ -27,6 +29,18 @@ namespace employeesWiki
             DependencyInjectionConfig.AddScoped(services);
 
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddCors(options => options.AddPolicy(Constants.DefaultCorsPolicyName, builder => builder.WithOrigins(
+                            // App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
+                            Configuration["App:CorsOrigins"]
+                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                .ToArray())
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                )
+            );
+
             services.AddControllers();
             services.AddDbContext<DbCtx>(x =>x.UseSqlServer(Configuration[Constants.ConnectionStringConfigName]));
             
@@ -58,7 +72,7 @@ namespace employeesWiki
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseCors(Constants.DefaultCorsPolicyName);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

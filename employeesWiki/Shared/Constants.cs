@@ -8,5 +8,7 @@ namespace employeesWiki.Shared
     public static class Constants
     { 
         public const string ConnectionStringConfigName = "ConnectionStrings:EmployeesWikiDbContext";
+        public const string DefaultCorsPolicyName = "localhost";
+        public const string CorsOriginsConfigName = "App:CorsOrigins";
     }
 }
