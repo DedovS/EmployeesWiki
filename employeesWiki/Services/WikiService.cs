@@ -27,6 +27,8 @@ namespace employeesWiki.Services
         {
             try
             {
+                wiki.Date = DateTime.Now;
+
                 var newWiki = await _unitOfWork.WikiRepository.CreateAsync(wiki);
                 await _unitOfWork.CompleteAsync();
                 return newWiki;
@@ -57,7 +59,7 @@ namespace employeesWiki.Services
             return await _unitOfWork.WikiRepository.GetByIdAsync(id);
         }
 
-        public async Task<List<Wiki>> GetListAsync(WikiPageParam pageParams)
+        public async Task<(List<Wiki> wikis, int totalCount)> GetListAsync(WikiPageParam pageParams)
         {
             Expression<Func<Wiki, bool>> predicate = null;
 
@@ -79,8 +81,8 @@ namespace employeesWiki.Services
                 || x.Description.Contains(pageParams.Search);
             }
 
-            var wikies = await _unitOfWork.WikiRepository.GetListAsync(pageParams, predicate);
-            return wikies;
+            var pagnationWiki = await _unitOfWork.WikiRepository.GetListAsync(pageParams, predicate);
+            return pagnationWiki;
         }
 
         public async Task<Wiki> UpdateAsync(Wiki wiki)

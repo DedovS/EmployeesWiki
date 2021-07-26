@@ -18,7 +18,7 @@ namespace employeesWiki.Contracts.Core
 
         Task<T> UpdateAsync(T entity);
 
-        Task<List<T>> GetListAsync(IPageParams pageParams,
+        Task<(List<T> list, int rowCount)> GetListAsync(IPageParams pageParams,
                                     Expression<Func<T, bool>> predicate = null,
                                     bool disableTracking = true,
                                     Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);

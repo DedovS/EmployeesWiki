@@ -14,7 +14,7 @@ namespace employeesWiki.Contracts.Services
 
         Task<Wiki> UpdateAsync(Wiki wiki);
 
-        Task<List<Wiki>> GetListAsync(WikiPageParam pageParams);
+        Task<(List<Wiki> wikis, int totalCount)> GetListAsync(WikiPageParam pageParams);
 
         Task<Wiki> GetByIdAsync(int id);
     }

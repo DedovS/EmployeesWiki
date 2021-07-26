@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using employeesWiki.Contracts;
 using employeesWiki.Contracts.Services;
+using employeesWiki.DtoModels;
 using employeesWiki.DtoModels.WikiDto;
 using employeesWiki.Models;
 using employeesWiki.Shared;
@@ -24,10 +25,14 @@ namespace employeesWiki.Controllers
 
         [Route("getList")]
         [HttpPost]
-        public async Task<List<WikiDto>> GetList(WikiPageParam pageParam)
+        public async Task<DtoWithPagination<WikiDto>> GetList(WikiPageParam pageParam)
         {
-            var wikiList = await _wikiService.GetListAsync(pageParam);
-            return _mapper.Map<List<WikiDto>>(wikiList);
+            var list = await _wikiService.GetListAsync(pageParam);
+            return  new DtoWithPagination<WikiDto>()
+            {
+                List = _mapper.Map<List<WikiDto>>(list.wikis),
+                TotalCount = list.totalCount
+            };
         }
 
         [HttpPost]

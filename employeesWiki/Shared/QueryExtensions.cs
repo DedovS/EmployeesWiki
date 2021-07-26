@@ -25,12 +25,11 @@ namespace employeesWiki.Shared
 
         public static IQueryable<T> Pagination<T>(this IQueryable<T> query, IPageParams pageParams)
         {
-            var skip = pageParams.PageNumber == 0 ? 1 : pageParams.PageNumber;
+            var skip = pageParams.PageNumber * pageParams.PageSize;
             var pageSize = pageParams.PageSize > 0 ? pageParams.PageSize : 10;
-            skip = skip * pageSize;
 
             var result = query
-                .Skip(skip - pageSize)
+                .Skip(skip)
                 .Take(pageSize);
 
             return result;

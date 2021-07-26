@@ -74,13 +74,15 @@ namespace employeesWiki.Core
             return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public virtual async Task<List<T>> GetListAsync(
+        public virtual async Task<(List<T> list, int rowCount)> GetListAsync(
             IPageParams pageParams,            
             Expression<Func<T, bool>> predicate = null,
             bool disableTracking = true,
             Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             var entityQuery = _dbSet.AsQueryable();
+
+            var totalCount = entityQuery.Count();
 
             if (predicate != null)
             {
@@ -92,7 +94,7 @@ namespace employeesWiki.Core
                 entityQuery = entityQuery.AsNoTracking();
             }
 
-            entityQuery = entityQuery.Pagination(pageParams).SortBy(pageParams);
+            entityQuery = entityQuery.SortBy(pageParams).Pagination(pageParams);
 
             if (include != null)
             {
@@ -100,7 +102,7 @@ namespace employeesWiki.Core
             }
 
             var entity = await entityQuery.ToListAsync();
-            return entity;
+            return (entity, totalCount);
         }
 
         public virtual async Task<T> UpdateAsync(T entity)
