@@ -1,4 +1,5 @@
-﻿using employeesWiki.Models;
+﻿using employeesWiki.Contracts;
+using employeesWiki.Models;
 using System;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -7,7 +8,7 @@ namespace employeesWiki.Shared
 {
     public static class QueryExtensions
     {
-        public static IQueryable<T> SortBy<T>(this IQueryable<T> query, PageParams pageParams) where T : BaseEntity
+        public static IQueryable<T> SortBy<T>(this IQueryable<T> query, IPageParams pageParams) where T : BaseEntity
         {
             pageParams.OrderDirection = pageParams.OrderDirection == "desc" || pageParams.OrderDirection == "asc"
                 ? pageParams.OrderDirection
@@ -22,7 +23,7 @@ namespace employeesWiki.Shared
             return orderQuery;
         }
 
-        public static IQueryable<T> Pagination<T>(this IQueryable<T> query, PageParams pageParams)
+        public static IQueryable<T> Pagination<T>(this IQueryable<T> query, IPageParams pageParams)
         {
             var skip = pageParams.PageNumber == 0 ? 1 : pageParams.PageNumber;
             var pageSize = pageParams.PageSize > 0 ? pageParams.PageSize : 10;

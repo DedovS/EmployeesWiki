@@ -1,6 +1,6 @@
 ﻿namespace employeesWiki.Contracts
 {
-    public interface IPageParam
+    public interface IPageParams
     {
         int PageNumber { get; set; }
         int PageSize { get; set; }

@@ -1,4 +1,5 @@
-﻿using employeesWiki.Contracts.Core;
+﻿using employeesWiki.Contracts;
+using employeesWiki.Contracts.Core;
 using employeesWiki.Models;
 using employeesWiki.Shared;
 using employeesWiki.WikiDbContext;
@@ -74,7 +75,7 @@ namespace employeesWiki.Core
         }
 
         public virtual async Task<List<T>> GetListAsync(
-            PageParams pageParams,            
+            IPageParams pageParams,            
             Expression<Func<T, bool>> predicate = null,
             bool disableTracking = true,
             Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
