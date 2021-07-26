@@ -82,12 +82,11 @@ namespace employeesWiki.Core
         {
             var entityQuery = _dbSet.AsQueryable();
 
-            var totalCount = entityQuery.Count();
-
             if (predicate != null)
             {
                 entityQuery = entityQuery.Where(predicate);
             }
+            var totalCount = entityQuery.Count();
 
             if (disableTracking)
             {
